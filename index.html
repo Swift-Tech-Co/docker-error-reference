@@ -59,6 +59,68 @@ footer a{color:#D4A843}
 code{font-family:"JetBrains Mono",monospace;font-size:11px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;color:rgba(255,255,255,0.7)}
 .count{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:16px}
 </style>
+
+    <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Swift Tech Co.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@SwiftTechCo">
+  <meta name="twitter:title" content="Docker Error Reference">
+  <meta name="twitter:description" content="Fix Docker errors: exit code 137, image pull failed, port already allocated, and permission denied.">
+  <meta name="author" content="Swift Tech Co.">
+  <meta name="robots" content="index, follow">
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Docker Error Reference",
+  "description": "Docker error reference with solutions for container exited 137, image pull failed, port already allocated, and common Docker errors.",
+  "url": "https://swift-tech-co.github.io/docker-error-reference/",
+  "author": {
+    "@type": "Organization",
+    "name": "Swift Tech Co.",
+    "url": "https://swifttechco.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Swift Tech Co.",
+    "url": "https://swifttechco.com"
+  },
+  "datePublished": "2026-05-26",
+  "dateModified": "2026-05-27"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Docker exit code 137 mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Exit code 137 means the container was killed by signal 9 (SIGKILL), typically because it ran out of memory and the Linux OOM killer terminated it. Fix: increase the container memory limit in docker-compose.yml (memory: 512m) or with docker run (-m 512m). Monitor with docker stats."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I fix Docker 'image pull failed'?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Image pull failures: (1) incorrect image name or tag, (2) Docker Hub rate limiting (100 pulls/6 hours anonymous) - fix with docker login, (3) network connectivity issues - check DNS with ping registry-1.docker.io, (4) private registry auth missing - run docker login to the correct registry first."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does 'port already allocated' mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Another process or container is already listening on that port. Fix: find the process using netstat -tulpn | grep :PORT or ss -tulpn | grep :PORT, stop it, or change the host port mapping in your docker-compose.yml."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
 
@@ -545,6 +607,23 @@ code{font-family:"JetBrains Mono",monospace;font-size:11px;background:rgba(255,2
 </div>
 
 
+
+<section style="max-width:760px;margin:0 auto 48px;padding:0 24px">
+  <h2 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;margin-bottom:4px;padding-bottom:16px;border-bottom:1px solid rgba(212,168,67,0.2)">Frequently Asked Questions</h2>
+  
+    <div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:20px 0">
+      <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:#fff;margin-bottom:10px">What does Docker exit code 137 mean?</h3>
+      <p style="font-size:14px;color:#a8a8b3;line-height:1.8">Exit code 137 means the container was killed by signal 9 (SIGKILL), typically because it ran out of memory and the Linux OOM killer terminated it. Fix: increase the container memory limit in docker-compose.yml (memory: 512m) or with docker run (-m 512m). Monitor with docker stats.</p>
+    </div>
+    <div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:20px 0">
+      <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:#fff;margin-bottom:10px">How do I fix Docker 'image pull failed'?</h3>
+      <p style="font-size:14px;color:#a8a8b3;line-height:1.8">Image pull failures: (1) incorrect image name or tag, (2) Docker Hub rate limiting (100 pulls/6 hours anonymous) - fix with docker login, (3) network connectivity issues - check DNS with ping registry-1.docker.io, (4) private registry auth missing - run docker login to the correct registry first.</p>
+    </div>
+    <div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:20px 0">
+      <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:#fff;margin-bottom:10px">What does 'port already allocated' mean?</h3>
+      <p style="font-size:14px;color:#a8a8b3;line-height:1.8">Another process or container is already listening on that port. Fix: find the process using netstat -tulpn | grep :PORT or ss -tulpn | grep :PORT, stop it, or change the host port mapping in your docker-compose.yml.</p>
+    </div>
+</section>
 <footer>
   <p>This page is the open-source data backing the full comparison article.</p>
   <p style="margin-top:8px">

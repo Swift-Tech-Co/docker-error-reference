@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docker Error Reference</title>
+<meta name="description" content="Structured reference of Docker error codes, exit codes, daemon errors, and fixes.">
+<meta property="og:title" content="Docker Error Reference">
+<meta property="og:description" content="Structured reference of Docker error codes, exit codes, daemon errors, and fixes.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://swifttechco.com/services/digital/hosting-maintenance">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#0d0d1a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;min-height:100vh}
+a{color:#D4A843;text-decoration:none}a:hover{text-decoration:underline}
+img{max-width:100%}
+nav{position:fixed;top:0;left:0;right:0;z-index:99;background:rgba(13,13,26,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,168,67,0.15);height:60px;display:flex;align-items:center;padding:0 24px;gap:20px}
+nav .logo{font-weight:800;font-size:15px;color:#fff;white-space:nowrap}
+nav .logo span{color:#D4A843}
+nav .spacer{flex:1}
+nav a.nav-link{font-size:13px;color:rgba(255,255,255,0.6);font-weight:600}
+nav a.nav-link:hover{color:#fff;text-decoration:none}
+nav a.cta-btn{font-size:12px;font-weight:700;padding:7px 18px;border-radius:8px;background:#D4A843;color:#000;white-space:nowrap}
+nav a.cta-btn:hover{text-decoration:none;opacity:0.9}
+.hero{padding:100px 24px 56px;max-width:900px;margin:0 auto;text-align:center}
+.hero .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,168,67,0.12);border:1px solid rgba(212,168,67,0.3);border-radius:100px;padding:5px 16px;margin-bottom:24px;font-size:11px;font-weight:700;color:#D4A843;letter-spacing:0.12em;text-transform:uppercase}
+.hero h1{font-size:clamp(26px,5vw,46px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:16px;letter-spacing:-0.02em}
+.hero .sub{font-size:16px;color:rgba(255,255,255,0.55);max-width:600px;margin:0 auto 32px;line-height:1.7}
+.hero .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:#D4A843;color:#000;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none}
+.btn-primary:hover{text-decoration:none;opacity:0.9}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:#fff;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;border:1px solid rgba(255,255,255,0.15);text-decoration:none}
+.btn-secondary:hover{background:rgba(255,255,255,0.06);text-decoration:none}
+.section{max-width:960px;margin:0 auto;padding:48px 24px}
+.section-title{font-size:clamp(18px,3vw,26px);font-weight:800;color:#fff;margin-bottom:8px}
+.section-sub{font-size:14px;color:rgba(255,255,255,0.45);margin-bottom:32px}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:28px}
+.gold{color:#D4A843}
+.rating-bar{display:flex;gap:4px;align-items:center}
+.rating-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-fill{background:#D4A843}
+.dot-empty{background:rgba(255,255,255,0.12)}
+footer{border-top:1px solid rgba(255,255,255,0.07);padding:32px 24px;text-align:center}
+footer p{font-size:13px;color:rgba(255,255,255,0.35)}
+footer a{color:#D4A843}
+@media(max-width:600px){nav .nav-link{display:none}.section{padding:32px 16px}.hero{padding:80px 16px 40px}}
+
+.search-bar{width:100%;padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#fff;font-size:14px;outline:none;margin-bottom:16px}
+.search-bar::placeholder{color:rgba(255,255,255,0.3)}
+.search-bar:focus{border-color:rgba(212,168,67,0.4)}
+.cat-btn{padding:5px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s}
+.cat-btn:hover,.cat-btn.active{background:rgba(212,168,67,0.15);border-color:rgba(212,168,67,0.4);color:#D4A843}
+.cat-btn.all-btn.active{background:rgba(212,168,67,0.15);border-color:rgba(212,168,67,0.4);color:#D4A843}
+.error-table{width:100%;border-collapse:collapse;font-size:13px}
+.error-table th{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em;padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08)}
+.error-table td{padding:12px 12px;vertical-align:top;border-bottom:1px solid rgba(255,255,255,0.05)}
+.error-table tr:hover td{background:rgba(255,255,255,0.025)}
+code{font-family:"JetBrains Mono",monospace;font-size:11px;background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;color:rgba(255,255,255,0.7)}
+.count{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="https://swifttechco.com">Swift <span>Tech Co.</span></a>
+  <span class="spacer"></span>
+  <a class="nav-link" href="https://swifttechco.com/tools">Free Tools</a>
+  <a class="nav-link" href="https://swifttechco.com/blog">Blog</a>
+  <a class="cta-btn" href="https://swifttechco.com/services/digital/hosting-maintenance" target="_blank" rel="noopener">Full Analysis &rarr;</a>
+</nav>
+<div class="hero">
+  <div class="badge">Error Reference</div>
+  <h1>Docker Error Reference</h1>
+  <p class="sub">Structured reference of Docker error codes, exit codes, daemon errors, and fixes.</p>
+  <div class="actions">
+    <a class="btn-primary" href="https://swifttechco.com/services/digital/hosting-maintenance" target="_blank" rel="noopener">Docker and DevOps Services &rarr;</a>
+    <a class="btn-secondary" href="https://swifttechco.com/tools" target="_blank" rel="noopener">Free Tools</a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="card" style="padding:20px 24px">
+    <input class="search-bar" type="search" placeholder="Search errors, codes, causes, fixes..." id="searchInput" oninput="doSearch()">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="cat-btn all-btn active" data-cat="all" onclick="filterCat(this)">All (42)</button>
+      <button class="cat-btn" data-cat="build" onclick="filterCat(this)">Build</button>
+<button class="cat-btn" data-cat="compose" onclick="filterCat(this)">Compose</button>
+<button class="cat-btn" data-cat="daemon" onclick="filterCat(this)">Daemon</button>
+<button class="cat-btn" data-cat="exit code" onclick="filterCat(this)">Exit Code</button>
+<button class="cat-btn" data-cat="image" onclick="filterCat(this)">Image</button>
+<button class="cat-btn" data-cat="network" onclick="filterCat(this)">Network</button>
+<button class="cat-btn" data-cat="registry" onclick="filterCat(this)">Registry</button>
+<button class="cat-btn" data-cat="runtime" onclick="filterCat(this)">Runtime</button>
+<button class="cat-btn" data-cat="security" onclick="filterCat(this)">Security</button>
+<button class="cat-btn" data-cat="storage" onclick="filterCat(this)">Storage</button>
+<button class="cat-btn" data-cat="swarm" onclick="filterCat(this)">Swarm</button>
+    </div>
+    <div class="count" id="countLabel">42 errors</div>
+    <div style="overflow-x:auto">
+      <table class="error-table" id="errorTable">
+        <thead><tr>
+          <th>Error</th>
+          <th>Category</th>
+          <th>Cause</th>
+          <th>Fix</th>
+          
+        </tr></thead>
+        <tbody id="errorBody">
+          <tr data-cat="exit code" data-search="exit:1 generic application error the application inside the container exited with a non-zero status. usually an unhandled exception, missing config, or startup failure. run `docker logs <container>` to see the application's stdout/stderr. check entrypoint script, env vars, and application startup sequence. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Generic Application Error</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Exit Code</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The application inside the container exited with a non-zero status. Usually an unhandled exception, missing config, or startup failure.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Run `docker logs <container>` to see the application's stdout/stderr. Check entrypoint script, env vars, and application startup sequence.</td>
+  
+</tr>
+<tr data-cat="exit code" data-search="exit:137 oom kill / sigkill process received sigkill. either the container exceeded its memory limit and was killed by the oom killer, or the container was manually stopped with `docker kill`. increase memory limit with `--memory` flag. profile the application for memory leaks. check `docker inspect <container>` for oomkilled: true. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">OOM Kill / SIGKILL</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Exit Code</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Process received SIGKILL. Either the container exceeded its memory limit and was killed by the OOM killer, or the container was manually stopped with `docker kill`.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Increase memory limit with `--memory` flag. Profile the application for memory leaks. Check `docker inspect <container>` for OOMKilled: true.</td>
+  
+</tr>
+<tr data-cat="exit code" data-search="exit:139 segmentation fault (sigsegv) the process attempted to access memory it was not permitted to access. common in c/c++ applications, corrupted binaries, or incompatible base images. check for architecture mismatch (arm64 vs amd64). rebuild the image for the target platform. run with `--platform linux/amd64` if needed. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Segmentation Fault (SIGSEGV)</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Exit Code</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The process attempted to access memory it was not permitted to access. Common in C/C++ applications, corrupted binaries, or incompatible base images.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Check for architecture mismatch (arm64 vs amd64). Rebuild the image for the target platform. Run with `--platform linux/amd64` if needed.</td>
+  
+</tr>
+<tr data-cat="exit code" data-search="exit:143 graceful shutdown (sigterm) container received sigterm and exited cleanly. this is the expected behaviour when `docker stop` is called. no action needed if this is expected. if unexpected, check orchestration system (kubernetes, ecs) for evictions or rolling restarts. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Graceful Shutdown (SIGTERM)</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Exit Code</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Container received SIGTERM and exited cleanly. This is the expected behaviour when `docker stop` is called.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">No action needed if this is expected. If unexpected, check orchestration system (Kubernetes, ECS) for evictions or rolling restarts.</td>
+  
+</tr>
+<tr data-cat="exit code" data-search="exit:127 command not found the command specified in cmd or entrypoint was not found in the container. missing binary or incorrect path. verify the entrypoint binary exists in the image: `docker run --rm <image> which <binary>`. check spelling and path in the dockerfile. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Command Not Found</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Exit Code</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The command specified in CMD or ENTRYPOINT was not found in the container. Missing binary or incorrect path.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Verify the entrypoint binary exists in the image: `docker run --rm <image> which <binary>`. Check spelling and PATH in the Dockerfile.</td>
+  
+</tr>
+<tr data-cat="exit code" data-search="exit:126 permission denied on entrypoint the entrypoint script or binary exists but is not executable. add `run chmod +x /entrypoint.sh` in the dockerfile before the entrypoint instruction. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Permission Denied on Entrypoint</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Exit Code</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The entrypoint script or binary exists but is not executable.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Add `RUN chmod +x /entrypoint.sh` in the Dockerfile before the ENTRYPOINT instruction.</td>
+  
+</tr>
+<tr data-cat="exit code" data-search="exit:2 misuse of shell builtin shell command misuse or incorrect usage of a shell builtin. also returned by some applications to indicate a general usage error. check your cmd or entrypoint for syntax errors. inspect logs with `docker logs <container>`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Misuse of Shell Builtin</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Exit Code</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Shell command misuse or incorrect usage of a shell builtin. Also returned by some applications to indicate a general usage error.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Check your CMD or ENTRYPOINT for syntax errors. Inspect logs with `docker logs <container>`.</td>
+  
+</tr>
+<tr data-cat="image" data-search="image-pull-failed image pull failed image name is misspelled, tag does not exist, or registry authentication failed. verify the image name and tag with `docker pull <image>:<tag>`. login to private registries with `docker login <registry>`. check network connectivity to the registry. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Image Pull Failed</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Image</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Image name is misspelled, tag does not exist, or registry authentication failed.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Verify the image name and tag with `docker pull <image>:<tag>`. Login to private registries with `docker login <registry>`. Check network connectivity to the registry.</td>
+  
+</tr>
+<tr data-cat="image" data-search="image-manifest-unknown image manifest unknown the specified tag does not exist in the registry, or the image was deleted after being referenced. check available tags on docker hub or your registry. use `docker images` to check local cache. use `latest` or a specific valid tag. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Image Manifest Unknown</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Image</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The specified tag does not exist in the registry, or the image was deleted after being referenced.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Check available tags on Docker Hub or your registry. Use `docker images` to check local cache. Use `latest` or a specific valid tag.</td>
+  
+</tr>
+<tr data-cat="image" data-search="image-platform-mismatch image platform mismatch pulling an image built for a different cpu architecture (e.g. arm image on amd64 host or vice versa). build multi-platform images with `docker buildx`. pull with `--platform linux/amd64` flag. use `docker_default_platform=linux/amd64` env var. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Image Platform Mismatch</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Image</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Pulling an image built for a different CPU architecture (e.g. ARM image on AMD64 host or vice versa).</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Build multi-platform images with `docker buildx`. Pull with `--platform linux/amd64` flag. Use `DOCKER_DEFAULT_PLATFORM=linux/amd64` env var.</td>
+  
+</tr>
+<tr data-cat="network" data-search="port-already-allocated port already allocated another process or container is already bound to the same host port. run `lsof -i :3000` or `ss -tulpn | grep 3000` to find the conflicting process. stop the other container or use a different host port: `-p 3001:3000`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Port Already Allocated</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Network</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Another process or container is already bound to the same host port.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Run `lsof -i :3000` or `ss -tulpn | grep 3000` to find the conflicting process. Stop the other container or use a different host port: `-p 3001:3000`.</td>
+  
+</tr>
+<tr data-cat="network" data-search="network-not-found network not found the specified docker network does not exist, usually because `docker network create` was not run or the network was deleted. create the network: `docker network create <name>`. in compose files, declare the network in the `networks:` section. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Network Not Found</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Network</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The specified Docker network does not exist, usually because `docker network create` was not run or the network was deleted.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Create the network: `docker network create <name>`. In Compose files, declare the network in the `networks:` section.</td>
+  
+</tr>
+<tr data-cat="network" data-search="dns-resolution-failure dns resolution failure container cannot resolve dns names. common when containers on different networks try to communicate by service name. ensure all communicating containers are on the same docker network. use `--network` flag or define shared networks in docker-compose.yml. check `/etc/resolv.conf` inside the container. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">DNS Resolution Failure</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Network</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Container cannot resolve DNS names. Common when containers on different networks try to communicate by service name.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Ensure all communicating containers are on the same Docker network. Use `--network` flag or define shared networks in docker-compose.yml. Check `/etc/resolv.conf` inside the container.</td>
+  
+</tr>
+<tr data-cat="storage" data-search="no-space-left no space left on device docker data directory has filled the host disk. common after many builds accumulate unused layers and stopped containers. run `docker system prune -af` to remove unused images, containers, and build cache. check disk usage with `df -h` and `docker system df`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">No Space Left on Device</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Storage</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Docker data directory has filled the host disk. Common after many builds accumulate unused layers and stopped containers.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Run `docker system prune -af` to remove unused images, containers, and build cache. Check disk usage with `df -h` and `docker system df`.</td>
+  
+</tr>
+<tr data-cat="storage" data-search="volume-mount-failed volume mount failed the host path specified in a bind mount does not exist, or docker desktop does not have permission to access it. create the host directory before running the container. on docker desktop (mac/windows), ensure the path is in the file sharing list under preferences. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Volume Mount Failed</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Storage</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The host path specified in a bind mount does not exist, or Docker Desktop does not have permission to access it.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Create the host directory before running the container. On Docker Desktop (Mac/Windows), ensure the path is in the File Sharing list under Preferences.</td>
+  
+</tr>
+<tr data-cat="build" data-search="build-context-too-large build context too large the build context sent to the daemon includes large files (node_modules, .git, datasets) that should be excluded. add a `.dockerignore` file in the build directory. exclude `node_modules`, `.git`, `*.log`, build artifacts, and large data files. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Build Context Too Large</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Build</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The build context sent to the daemon includes large files (node_modules, .git, datasets) that should be excluded.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Add a `.dockerignore` file in the build directory. Exclude `node_modules`, `.git`, `*.log`, build artifacts, and large data files.</td>
+  
+</tr>
+<tr data-cat="build" data-search="build-run-failed run command failed during build a run instruction in the dockerfile failed. common causes: package not found, wrong base image version, network issues during apt/pip install. run the failing command interactively: `docker run --rm -it <base-image> bash`. check package names and versions. add `--no-cache` to the build to skip stale layers. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">RUN Command Failed During Build</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Build</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">A RUN instruction in the Dockerfile failed. Common causes: package not found, wrong base image version, network issues during apt/pip install.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Run the failing command interactively: `docker run --rm -it <base-image> bash`. Check package names and versions. Add `--no-cache` to the build to skip stale layers.</td>
+  
+</tr>
+<tr data-cat="build" data-search="build-layer-cache-miss unexpected cache invalidation copy or add instructions placed before run apt/pip install force reinstallation on every code change. order dockerfile instructions from least-changing to most-changing. copy dependency manifests (package.json, requirements.txt) first, install dependencies, then copy application code. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Unexpected Cache Invalidation</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Build</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">COPY or ADD instructions placed before RUN apt/pip install force reinstallation on every code change.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Order Dockerfile instructions from least-changing to most-changing. Copy dependency manifests (package.json, requirements.txt) first, install dependencies, then copy application code.</td>
+  
+</tr>
+<tr data-cat="daemon" data-search="daemon-not-running docker daemon not running the docker daemon process is not started, or the current user does not have permission to access the socket. start docker: `sudo systemctl start docker`. add user to docker group: `sudo usermod -ag docker $user`. on desktop, open the docker application. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Docker Daemon Not Running</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Daemon</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The Docker daemon process is not started, or the current user does not have permission to access the socket.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Start Docker: `sudo systemctl start docker`. Add user to docker group: `sudo usermod -aG docker $USER`. On Desktop, open the Docker application.</td>
+  
+</tr>
+<tr data-cat="daemon" data-search="daemon-out-of-memory docker daemon out of memory the docker host does not have enough free memory to start the container. stop unused containers: `docker stop $(docker ps -q)`. increase host ram. set container memory limits to avoid any single container consuming all available memory. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Docker Daemon Out of Memory</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Daemon</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The Docker host does not have enough free memory to start the container.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Stop unused containers: `docker stop $(docker ps -q)`. Increase host RAM. Set container memory limits to avoid any single container consuming all available memory.</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="container-already-exists container name already in use a stopped container with the same name still exists. remove the existing container: `docker rm myapp`. or use `--rm` flag so the container auto-removes on exit. or use `docker rename` to keep the old one. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Container Name Already in Use</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">A stopped container with the same name still exists.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Remove the existing container: `docker rm myapp`. Or use `--rm` flag so the container auto-removes on exit. Or use `docker rename` to keep the old one.</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="container-health-unhealthy container health check failing the healthcheck instruction in the dockerfile is failing. the application may not be ready or crashed silently. inspect health logs: `docker inspect --format='{{json .state.health}}' <container>`. adjust `--health-start-period` to give the app more startup time. debug the healthcheck command manually. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Container Health Check Failing</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The HEALTHCHECK instruction in the Dockerfile is failing. The application may not be ready or crashed silently.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Inspect health logs: `docker inspect --format='{{json .State.Health}}' <container>`. Adjust `--health-start-period` to give the app more startup time. Debug the healthcheck command manually.</td>
+  
+</tr>
+<tr data-cat="compose" data-search="compose-version-unsupported compose file version unsupported the compose file specifies a version that the installed docker compose version does not support. update docker compose to the latest version. or lower the `version:` field in docker-compose.yml. compose v2 (bundled with docker) uses the compose specification and ignores the version field. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Compose File Version Unsupported</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Compose</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The Compose file specifies a version that the installed Docker Compose version does not support.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Update Docker Compose to the latest version. Or lower the `version:` field in docker-compose.yml. Compose v2 (bundled with Docker) uses the Compose Specification and ignores the version field.</td>
+  
+</tr>
+<tr data-cat="compose" data-search="compose-service-failed compose service failed to start one of the services in a docker-compose.yml failed during build or startup. run `docker compose logs <service>` to isolate the failing service. start services individually with `docker compose up <service>` to narrow down the issue. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Compose Service Failed to Start</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Compose</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">One of the services in a docker-compose.yml failed during build or startup.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Run `docker compose logs <service>` to isolate the failing service. Start services individually with `docker compose up <service>` to narrow down the issue.</td>
+  
+</tr>
+<tr data-cat="compose" data-search="compose-dependency-order service started before dependency ready `depends_on` only waits for the container to start, not for the service inside to be ready. a database container starting does not mean postgres is accepting connections yet. add a `healthcheck` to the dependency service and use `depends_on: condition: service_healthy` in compose v3.9+. or add a startup retry loop in the dependent application. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Service Started Before Dependency Ready</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Compose</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">`depends_on` only waits for the container to start, not for the service inside to be ready. A database container starting does not mean Postgres is accepting connections yet.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Add a `healthcheck` to the dependency service and use `depends_on: condition: service_healthy` in Compose v3.9+. Or add a startup retry loop in the dependent application.</td>
+  
+</tr>
+<tr data-cat="registry" data-search="registry-rate-limit docker hub rate limit anonymous docker hub pulls are rate-limited to 100 pulls per 6 hours per ip. ci/cd environments sharing an ip can hit this quickly. login to docker hub in ci: `docker login -u $docker_user -p $docker_token`. use a docker hub pro account. mirror images to a private registry. use `--cache-from` to reduce pull frequency. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Docker Hub Rate Limit</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Registry</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Anonymous Docker Hub pulls are rate-limited to 100 pulls per 6 hours per IP. CI/CD environments sharing an IP can hit this quickly.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Login to Docker Hub in CI: `docker login -u $DOCKER_USER -p $DOCKER_TOKEN`. Use a Docker Hub Pro account. Mirror images to a private registry. Use `--cache-from` to reduce pull frequency.</td>
+  
+</tr>
+<tr data-cat="registry" data-search="tls-cert-error tls certificate error attempting to connect to a private registry using a self-signed certificate that docker does not trust. add the ca cert to `/etc/docker/certs.d/<registry>/ca.crt`. or add the registry to `insecure-registries` in `/etc/docker/daemon.json` (not recommended for production). ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">TLS Certificate Error</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Registry</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Attempting to connect to a private registry using a self-signed certificate that Docker does not trust.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Add the CA cert to `/etc/docker/certs.d/<registry>/ca.crt`. Or add the registry to `insecure-registries` in `/etc/docker/daemon.json` (not recommended for production).</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="exec-not-found exec format error the binary in the container was compiled for a different architecture than the host. common when building on apple silicon (arm64) and deploying to x86_64 servers. build for the target platform: `docker buildx build --platform linux/amd64 -t myimage .`. use multi-stage builds to compile inside the container rather than copying host binaries. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Exec Format Error</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The binary in the container was compiled for a different architecture than the host. Common when building on Apple Silicon (arm64) and deploying to x86_64 servers.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Build for the target platform: `docker buildx build --platform linux/amd64 -t myimage .`. Use multi-stage builds to compile inside the container rather than copying host binaries.</td>
+  
+</tr>
+<tr data-cat="security" data-search="privileged-operation-denied operation not permitted (capabilities) the container is attempting a privileged operation (e.g. binding port < 1024, modifying kernel parameters) that requires linux capabilities not granted by default. grant specific capabilities with `--cap-add net_bind_service` rather than running `--privileged`. for sysctl changes use `--sysctl net.ipv4.ip_forward=1`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Operation Not Permitted (Capabilities)</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Security</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The container is attempting a privileged operation (e.g. binding port < 1024, modifying kernel parameters) that requires Linux capabilities not granted by default.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Grant specific capabilities with `--cap-add NET_BIND_SERVICE` rather than running `--privileged`. For sysctl changes use `--sysctl net.ipv4.ip_forward=1`.</td>
+  
+</tr>
+<tr data-cat="security" data-search="seccomp-blocked syscall blocked by seccomp docker's default seccomp profile blocks certain syscalls. some applications (perf, certain jvm operations, ptrace) require syscalls not in the default allowlist. run with a custom seccomp profile: `--security-opt seccomp=custom.json`. as a last resort: `--security-opt seccomp=unconfined` (not recommended for production). ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Syscall Blocked by Seccomp</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Security</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Docker's default seccomp profile blocks certain syscalls. Some applications (perf, certain JVM operations, ptrace) require syscalls not in the default allowlist.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Run with a custom seccomp profile: `--security-opt seccomp=custom.json`. As a last resort: `--security-opt seccomp=unconfined` (not recommended for production).</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="cgroup-limit-exceeded cgroup resource limit exceeded container exceeded cpu, memory, or pid limits set by cgroup constraints (via docker `--memory`, `--cpus`, `--pids-limit` flags or kubernetes resource limits). increase limits: `--memory=2g --cpus=1`. profile the application for resource leaks. use `docker stats <container>` to monitor live resource usage. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">cgroup Resource Limit Exceeded</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Container exceeded CPU, memory, or PID limits set by cgroup constraints (via Docker `--memory`, `--cpus`, `--pids-limit` flags or Kubernetes resource limits).</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Increase limits: `--memory=2g --cpus=1`. Profile the application for resource leaks. Use `docker stats <container>` to monitor live resource usage.</td>
+  
+</tr>
+<tr data-cat="build" data-search="copy-file-not-found copy / add source not found the file specified in a copy instruction does not exist in the build context, or it was excluded by .dockerignore. check the file path relative to the build context directory. review .dockerignore for accidental exclusions. verify the file exists locally before building. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">COPY / ADD Source Not Found</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Build</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The file specified in a COPY instruction does not exist in the build context, or it was excluded by .dockerignore.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Check the file path relative to the build context directory. Review .dockerignore for accidental exclusions. Verify the file exists locally before building.</td>
+  
+</tr>
+<tr data-cat="build" data-search="layer-too-large image layer too large files added in one run layer are deleted in a subsequent layer, but the data still exists in the earlier layer (layers are additive). combine run commands with `&&` and clean up in the same layer: `run apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*`. use multi-stage builds. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Image Layer Too Large</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Build</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Files added in one RUN layer are deleted in a subsequent layer, but the data still exists in the earlier layer (layers are additive).</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Combine RUN commands with `&&` and clean up in the same layer: `RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*`. Use multi-stage builds.</td>
+  
+</tr>
+<tr data-cat="daemon" data-search="log-driver-error log driver configuration error the configured log driver (fluentd, awslogs, gelf) is unreachable or misconfigured. verify the log driver endpoint is reachable from the docker host. check log driver options in daemon.json or container `--log-driver` and `--log-opt` flags. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Log Driver Configuration Error</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Daemon</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The configured log driver (fluentd, awslogs, gelf) is unreachable or misconfigured.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Verify the log driver endpoint is reachable from the Docker host. Check log driver options in daemon.json or container `--log-driver` and `--log-opt` flags.</td>
+  
+</tr>
+<tr data-cat="storage" data-search="overlay2-fs-error overlayfs error overlayfs storage driver error, often caused by filesystem incompatibility (e.g. xfs without d_type support, zfs, nfs). check filesystem type: `df -t /var/lib/docker`. ensure xfs is formatted with `ftype=1`. consider switching to a supported storage driver for your filesystem. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">OverlayFS Error</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Storage</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">OverlayFS storage driver error, often caused by filesystem incompatibility (e.g. XFS without d_type support, ZFS, NFS).</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Check filesystem type: `df -T /var/lib/docker`. Ensure XFS is formatted with `ftype=1`. Consider switching to a supported storage driver for your filesystem.</td>
+  
+</tr>
+<tr data-cat="swarm" data-search="swarm-not-initialized swarm not initialized attempting to run swarm commands on a node that has not been initialized as a swarm manager. initialize swarm: `docker swarm init`. for worker nodes, use the join token from `docker swarm join-token worker`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Swarm Not Initialized</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Swarm</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">Attempting to run Swarm commands on a node that has not been initialized as a Swarm manager.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Initialize Swarm: `docker swarm init`. For worker nodes, use the join token from `docker swarm join-token worker`.</td>
+  
+</tr>
+<tr data-cat="network" data-search="network-subnet-conflict network subnet conflict the subnet docker is trying to allocate for a new network overlaps with an existing network or host route. specify a custom subnet: `docker network create --subnet 172.28.0.0/16 mynet`. or prune unused networks: `docker network prune`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Network Subnet Conflict</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Network</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The subnet Docker is trying to allocate for a new network overlaps with an existing network or host route.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Specify a custom subnet: `docker network create --subnet 172.28.0.0/16 mynet`. Or prune unused networks: `docker network prune`.</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="healthcheck-timeout health check timeout the healthcheck command took longer than the configured `--health-timeout` value (default 30s). increase timeout: `healthcheck --interval=30s --timeout=60s cmd ...`. optimize the health check command. ensure the application is not under excessive load. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Health Check Timeout</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The healthcheck command took longer than the configured `--health-timeout` value (default 30s).</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Increase timeout: `HEALTHCHECK --interval=30s --timeout=60s CMD ...`. Optimize the health check command. Ensure the application is not under excessive load.</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="entrypoint-env-missing required environment variable missing the application requires an environment variable that was not passed to the container. pass env vars with `-e var=value` or `--env-file .env`. in compose, use the `environment:` or `env_file:` keys. validate required vars in entrypoint scripts with `set -u`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Required Environment Variable Missing</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The application requires an environment variable that was not passed to the container.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Pass env vars with `-e VAR=value` or `--env-file .env`. In Compose, use the `environment:` or `env_file:` keys. Validate required vars in entrypoint scripts with `set -u`.</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="copy-permission-denied file permission denied inside container the process inside the container is running as a non-root user without write permission to the target directory. add `run chown -r appuser:appuser /app` before switching to the non-root user in your dockerfile. or set directory permissions with `run chmod 755 /data`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">File Permission Denied Inside Container</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The process inside the container is running as a non-root user without write permission to the target directory.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Add `RUN chown -R appuser:appuser /app` before switching to the non-root user in your Dockerfile. Or set directory permissions with `RUN chmod 755 /data`.</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="pid1-zombie zombie processes (pid 1 problem) when a shell script is pid 1 in a container, it does not reap child processes or forward signals correctly, causing zombie accumulation and unclean shutdowns. use `exec` in entrypoint scripts: `exec node server.js`. or use a lightweight init system: `docker run --init`. or use `tini` as pid 1 in the dockerfile. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Zombie Processes (PID 1 Problem)</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">When a shell script is PID 1 in a container, it does not reap child processes or forward signals correctly, causing zombie accumulation and unclean shutdowns.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Use `exec` in entrypoint scripts: `exec node server.js`. Or use a lightweight init system: `docker run --init`. Or use `tini` as PID 1 in the Dockerfile.</td>
+  
+</tr>
+<tr data-cat="runtime" data-search="ulimit-exceeded open file limit exceeded (ulimit) the process inside the container hit the open file descriptor limit. common with high-traffic servers, databases, or applications that open many connections. increase limits: `docker run --ulimit nofile=65535:65535`. set system-wide defaults in `/etc/docker/daemon.json` under `"default-ulimits"`. check current usage: `ls /proc/<pid>/fd | wc -l`. ">
+  <td style="white-space:nowrap">
+    
+    <span style="font-size:12px;font-weight:700;color:#D4A843">Open File Limit Exceeded (ulimit)</span>
+  </td>
+  <td><span style="font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);white-space:nowrap">Runtime</span></td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">The process inside the container hit the open file descriptor limit. Common with high-traffic servers, databases, or applications that open many connections.</td>
+  <td style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5">Increase limits: `docker run --ulimit nofile=65535:65535`. Set system-wide defaults in `/etc/docker/daemon.json` under `"default-ulimits"`. Check current usage: `ls /proc/<pid>/fd | wc -l`.</td>
+  
+</tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-top:0">
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;background:rgba(212,168,67,0.05);border-color:rgba(212,168,67,0.2)">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#D4A843;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Need expert help?</div>
+      <div style="font-size:18px;font-weight:800;color:#fff">Docker and DevOps Services</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">Architecture review, debugging, and production support</div>
+    </div>
+    <a class="btn-primary" href="https://swifttechco.com/services/digital/hosting-maintenance" target="_blank" rel="noopener">Talk to a specialist &rarr;</a>
+  </div>
+</div>
+
+
+<footer>
+  <p>This page is the open-source data backing the full comparison article.</p>
+  <p style="margin-top:8px">
+    <a href="https://swifttechco.com/services/digital/hosting-maintenance" target="_blank" rel="noopener">Read the full analysis at swifttechco.com &rarr;</a>
+    &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+    <a href="https://swifttechco.com" target="_blank" rel="noopener">Swift Tech Co.</a>
+  </p>
+</footer>
+
+<script>
+let activeCat = "all";
+function rows() { return document.querySelectorAll("#errorBody tr"); }
+function doSearch() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  let visible = 0;
+  rows().forEach(r => {
+    const matchCat = activeCat === "all" || r.dataset.cat === activeCat;
+    const matchQ   = !q || r.dataset.search.includes(q);
+    r.style.display = matchCat && matchQ ? "" : "none";
+    if (matchCat && matchQ) visible++;
+  });
+  document.getElementById("countLabel").textContent = visible + " errors";
+}
+function filterCat(btn) {
+  activeCat = btn.dataset.cat;
+  document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  doSearch();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+{
+  "meta": {
+    "title": "Docker Error Reference",
+    "description": "Structured reference of Docker error codes, exit codes, daemon errors, and fixes.",
+    "version": "1.0.0",
+    "updated": "2026-05-26",
+    "source": "Swift Tech Co. — https://swifttechco.com",
+    "total": 42
+  },
+  "errors": [
+    {
+      "code": "exit:1",
+      "name": "Generic Application Error",
+      "category": "Exit Code",
+      "severity": "medium",
+      "message": "Container exited with code 1",
+      "cause": "The application inside the container exited with a non-zero status. Usually an unhandled exception, missing config, or startup failure.",
+      "fix": "Run `docker logs <container>` to see the application's stdout/stderr. Check entrypoint script, env vars, and application startup sequence.",
+      "tags": ["exit-code", "application"]
+    },
+    {
+      "code": "exit:137",
+      "name": "OOM Kill / SIGKILL",
+      "category": "Exit Code",
+      "severity": "high",
+      "message": "Container exited with code 137 (128 + SIGKILL)",
+      "cause": "Process received SIGKILL. Either the container exceeded its memory limit and was killed by the OOM killer, or the container was manually stopped with `docker kill`.",
+      "fix": "Increase memory limit with `--memory` flag. Profile the application for memory leaks. Check `docker inspect <container>` for OOMKilled: true.",
+      "tags": ["exit-code", "oom", "memory", "sigkill"]
+    },
+    {
+      "code": "exit:139",
+      "name": "Segmentation Fault (SIGSEGV)",
+      "category": "Exit Code",
+      "severity": "high",
+      "message": "Container exited with code 139 (128 + SIGSEGV)",
+      "cause": "The process attempted to access memory it was not permitted to access. Common in C/C++ applications, corrupted binaries, or incompatible base images.",
+      "fix": "Check for architecture mismatch (arm64 vs amd64). Rebuild the image for the target platform. Run with `--platform linux/amd64` if needed.",
+      "tags": ["exit-code", "segfault", "sigsegv", "crash"]
+    },
+    {
+      "code": "exit:143",
+      "name": "Graceful Shutdown (SIGTERM)",
+      "category": "Exit Code",
+      "severity": "low",
+      "message": "Container exited with code 143 (128 + SIGTERM)",
+      "cause": "Container received SIGTERM and exited cleanly. This is the expected behaviour when `docker stop` is called.",
+      "fix": "No action needed if this is expected. If unexpected, check orchestration system (Kubernetes, ECS) for evictions or rolling restarts.",
+      "tags": ["exit-code", "sigterm", "graceful-shutdown"]
+    },
+    {
+      "code": "exit:127",
+      "name": "Command Not Found",
+      "category": "Exit Code",
+      "severity": "medium",
+      "message": "Container exited with code 127",
+      "cause": "The command specified in CMD or ENTRYPOINT was not found in the container. Missing binary or incorrect path.",
+      "fix": "Verify the entrypoint binary exists in the image: `docker run --rm <image> which <binary>`. Check spelling and PATH in the Dockerfile.",
+      "tags": ["exit-code", "entrypoint", "command-not-found"]
+    },
+    {
+      "code": "exit:126",
+      "name": "Permission Denied on Entrypoint",
+      "category": "Exit Code",
+      "severity": "medium",
+      "message": "Container exited with code 126",
+      "cause": "The entrypoint script or binary exists but is not executable.",
+      "fix": "Add `RUN chmod +x /entrypoint.sh` in the Dockerfile before the ENTRYPOINT instruction.",
+      "tags": ["exit-code", "permissions", "entrypoint"]
+    },
+    {
+      "code": "exit:2",
+      "name": "Misuse of Shell Builtin",
+      "category": "Exit Code",
+      "severity": "low",
+      "message": "Container exited with code 2",
+      "cause": "Shell command misuse or incorrect usage of a shell builtin. Also returned by some applications to indicate a general usage error.",
+      "fix": "Check your CMD or ENTRYPOINT for syntax errors. Inspect logs with `docker logs <container>`.",
+      "tags": ["exit-code", "shell"]
+    },
+    {
+      "code": "image-pull-failed",
+      "name": "Image Pull Failed",
+      "category": "Image",
+      "severity": "high",
+      "message": "Error response from daemon: pull access denied / repository does not exist",
+      "cause": "Image name is misspelled, tag does not exist, or registry authentication failed.",
+      "fix": "Verify the image name and tag with `docker pull <image>:<tag>`. Login to private registries with `docker login <registry>`. Check network connectivity to the registry.",
+      "tags": ["image", "registry", "authentication"]
+    },
+    {
+      "code": "image-manifest-unknown",
+      "name": "Image Manifest Unknown",
+      "category": "Image",
+      "severity": "medium",
+      "message": "Error response from daemon: manifest unknown",
+      "cause": "The specified tag does not exist in the registry, or the image was deleted after being referenced.",
+      "fix": "Check available tags on Docker Hub or your registry. Use `docker images` to check local cache. Use `latest` or a specific valid tag.",
+      "tags": ["image", "registry", "tag"]
+    },
+    {
+      "code": "image-platform-mismatch",
+      "name": "Image Platform Mismatch",
+      "category": "Image",
+      "severity": "medium",
+      "message": "WARNING: The requested image's platform (linux/arm64) does not match the detected host platform (linux/amd64)",
+      "cause": "Pulling an image built for a different CPU architecture (e.g. ARM image on AMD64 host or vice versa).",
+      "fix": "Build multi-platform images with `docker buildx`. Pull with `--platform linux/amd64` flag. Use `DOCKER_DEFAULT_PLATFORM=linux/amd64` env var.",
+      "tags": ["image", "platform", "arm64", "amd64", "buildx"]
+    },
+    {
+      "code": "port-already-allocated",
+      "name": "Port Already Allocated",
+      "category": "Network",
+      "severity": "medium",
+      "message": "Bind for 0.0.0.0:3000 failed: port is already allocated",
+      "cause": "Another process or container is already bound to the same host port.",
+      "fix": "Run `lsof -i :3000` or `ss -tulpn | grep 3000` to find the conflicting process. Stop the other container or use a different host port: `-p 3001:3000`.",
+      "tags": ["network", "port", "bind"]
+    },
+    {
+      "code": "network-not-found",
+      "name": "Network Not Found",
+      "category": "Network",
+      "severity": "medium",
+      "message": "Error response from daemon: network <name> not found",
+      "cause": "The specified Docker network does not exist, usually because `docker network create` was not run or the network was deleted.",
+      "fix": "Create the network: `docker network create <name>`. In Compose files, declare the network in the `networks:` section.",
+      "tags": ["network", "compose"]
+    },
+    {
+      "code": "dns-resolution-failure",
+      "name": "DNS Resolution Failure",
+      "category": "Network",
+      "severity": "medium",
+      "message": "Could not resolve host: <hostname>",
+      "cause": "Container cannot resolve DNS names. Common when containers on different networks try to communicate by service name.",
+      "fix": "Ensure all communicating containers are on the same Docker network. Use `--network` flag or define shared networks in docker-compose.yml. Check `/etc/resolv.conf` inside the container.",
+      "tags": ["network", "dns", "compose"]
+    },
+    {
+      "code": "no-space-left",
+      "name": "No Space Left on Device",
+      "category": "Storage",
+      "severity": "high",
+      "message": "Error response from daemon: write /var/lib/docker/...: no space left on device",
+      "cause": "Docker data directory has filled the host disk. Common after many builds accumulate unused layers and stopped containers.",
+      "fix": "Run `docker system prune -af` to remove unused images, containers, and build cache. Check disk usage with `df -h` and `docker system df`.",
+      "tags": ["storage", "disk", "prune"]
+    },
+    {
+      "code": "volume-mount-failed",
+      "name": "Volume Mount Failed",
+      "category": "Storage",
+      "severity": "medium",
+      "message": "Error response from daemon: invalid mount config for type bind: source path does not exist",
+      "cause": "The host path specified in a bind mount does not exist, or Docker Desktop does not have permission to access it.",
+      "fix": "Create the host directory before running the container. On Docker Desktop (Mac/Windows), ensure the path is in the File Sharing list under Preferences.",
+      "tags": ["storage", "volume", "bind-mount"]
+    },
+    {
+      "code": "build-context-too-large",
+      "name": "Build Context Too Large",
+      "category": "Build",
+      "severity": "medium",
+      "message": "Sending build context to Docker daemon  2.5GB",
+      "cause": "The build context sent to the daemon includes large files (node_modules, .git, datasets) that should be excluded.",
+      "fix": "Add a `.dockerignore` file in the build directory. Exclude `node_modules`, `.git`, `*.log`, build artifacts, and large data files.",
+      "tags": ["build", "dockerignore", "performance"]
+    },
+    {
+      "code": "build-run-failed",
+      "name": "RUN Command Failed During Build",
+      "category": "Build",
+      "severity": "medium",
+      "message": "The command '/bin/sh -c <command>' returned a non-zero code: 1",
+      "cause": "A RUN instruction in the Dockerfile failed. Common causes: package not found, wrong base image version, network issues during apt/pip install.",
+      "fix": "Run the failing command interactively: `docker run --rm -it <base-image> bash`. Check package names and versions. Add `--no-cache` to the build to skip stale layers.",
+      "tags": ["build", "dockerfile", "run"]
+    },
+    {
+      "code": "build-layer-cache-miss",
+      "name": "Unexpected Cache Invalidation",
+      "category": "Build",
+      "severity": "low",
+      "message": "Slow builds due to cache being invalidated too early",
+      "cause": "COPY or ADD instructions placed before RUN apt/pip install force reinstallation on every code change.",
+      "fix": "Order Dockerfile instructions from least-changing to most-changing. Copy dependency manifests (package.json, requirements.txt) first, install dependencies, then copy application code.",
+      "tags": ["build", "cache", "performance", "dockerfile"]
+    },
+    {
+      "code": "daemon-not-running",
+      "name": "Docker Daemon Not Running",
+      "category": "Daemon",
+      "severity": "high",
+      "message": "Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?",
+      "cause": "The Docker daemon process is not started, or the current user does not have permission to access the socket.",
+      "fix": "Start Docker: `sudo systemctl start docker`. Add user to docker group: `sudo usermod -aG docker $USER`. On Desktop, open the Docker application.",
+      "tags": ["daemon", "permissions", "socket"]
+    },
+    {
+      "code": "daemon-out-of-memory",
+      "name": "Docker Daemon Out of Memory",
+      "category": "Daemon",
+      "severity": "high",
+      "message": "Error response from daemon: cannot allocate memory",
+      "cause": "The Docker host does not have enough free memory to start the container.",
+      "fix": "Stop unused containers: `docker stop $(docker ps -q)`. Increase host RAM. Set container memory limits to avoid any single container consuming all available memory.",
+      "tags": ["daemon", "memory", "oom"]
+    },
+    {
+      "code": "container-already-exists",
+      "name": "Container Name Already in Use",
+      "category": "Runtime",
+      "severity": "low",
+      "message": "Error response from daemon: Conflict. The container name \"/myapp\" is already in use",
+      "cause": "A stopped container with the same name still exists.",
+      "fix": "Remove the existing container: `docker rm myapp`. Or use `--rm` flag so the container auto-removes on exit. Or use `docker rename` to keep the old one.",
+      "tags": ["runtime", "naming", "conflict"]
+    },
+    {
+      "code": "container-health-unhealthy",
+      "name": "Container Health Check Failing",
+      "category": "Runtime",
+      "severity": "medium",
+      "message": "container is unhealthy",
+      "cause": "The HEALTHCHECK instruction in the Dockerfile is failing. The application may not be ready or crashed silently.",
+      "fix": "Inspect health logs: `docker inspect --format='{{json .State.Health}}' <container>`. Adjust `--health-start-period` to give the app more startup time. Debug the healthcheck command manually.",
+      "tags": ["runtime", "healthcheck"]
+    },
+    {
+      "code": "compose-version-unsupported",
+      "name": "Compose File Version Unsupported",
+      "category": "Compose",
+      "severity": "low",
+      "message": "Version in \"./docker-compose.yml\" is unsupported",
+      "cause": "The Compose file specifies a version that the installed Docker Compose version does not support.",
+      "fix": "Update Docker Compose to the latest version. Or lower the `version:` field in docker-compose.yml. Compose v2 (bundled with Docker) uses the Compose Specification and ignores the version field.",
+      "tags": ["compose", "version"]
+    },
+    {
+      "code": "compose-service-failed",
+      "name": "Compose Service Failed to Start",
+      "category": "Compose",
+      "severity": "high",
+      "message": "service <name> failed to build or start",
+      "cause": "One of the services in a docker-compose.yml failed during build or startup.",
+      "fix": "Run `docker compose logs <service>` to isolate the failing service. Start services individually with `docker compose up <service>` to narrow down the issue.",
+      "tags": ["compose", "service", "startup"]
+    },
+    {
+      "code": "compose-dependency-order",
+      "name": "Service Started Before Dependency Ready",
+      "category": "Compose",
+      "severity": "medium",
+      "message": "Connection refused / service not available on startup",
+      "cause": "`depends_on` only waits for the container to start, not for the service inside to be ready. A database container starting does not mean Postgres is accepting connections yet.",
+      "fix": "Add a `healthcheck` to the dependency service and use `depends_on: condition: service_healthy` in Compose v3.9+. Or add a startup retry loop in the dependent application.",
+      "tags": ["compose", "depends-on", "healthcheck", "startup"]
+    },
+    {
+      "code": "registry-rate-limit",
+      "name": "Docker Hub Rate Limit",
+      "category": "Registry",
+      "severity": "medium",
+      "message": "toomanyrequests: Too Many Requests. Please see https://docs.docker.com/docker-hub/download-rate-limit/",
+      "cause": "Anonymous Docker Hub pulls are rate-limited to 100 pulls per 6 hours per IP. CI/CD environments sharing an IP can hit this quickly.",
+      "fix": "Login to Docker Hub in CI: `docker login -u $DOCKER_USER -p $DOCKER_TOKEN`. Use a Docker Hub Pro account. Mirror images to a private registry. Use `--cache-from` to reduce pull frequency.",
+      "tags": ["registry", "rate-limit", "docker-hub", "ci"]
+    },
+    {
+      "code": "tls-cert-error",
+      "name": "TLS Certificate Error",
+      "category": "Registry",
+      "severity": "medium",
+      "message": "x509: certificate signed by unknown authority",
+      "cause": "Attempting to connect to a private registry using a self-signed certificate that Docker does not trust.",
+      "fix": "Add the CA cert to `/etc/docker/certs.d/<registry>/ca.crt`. Or add the registry to `insecure-registries` in `/etc/docker/daemon.json` (not recommended for production).",
+      "tags": ["registry", "tls", "certificate", "private-registry"]
+    },
+    {
+      "code": "exec-not-found",
+      "name": "Exec Format Error",
+      "category": "Runtime",
+      "severity": "high",
+      "message": "exec format error",
+      "cause": "The binary in the container was compiled for a different architecture than the host. Common when building on Apple Silicon (arm64) and deploying to x86_64 servers.",
+      "fix": "Build for the target platform: `docker buildx build --platform linux/amd64 -t myimage .`. Use multi-stage builds to compile inside the container rather than copying host binaries.",
+      "tags": ["runtime", "architecture", "arm64", "amd64", "buildx"]
+    },
+    {
+      "code": "privileged-operation-denied",
+      "name": "Operation Not Permitted (Capabilities)",
+      "category": "Security",
+      "severity": "medium",
+      "message": "Operation not permitted / EPERM",
+      "cause": "The container is attempting a privileged operation (e.g. binding port < 1024, modifying kernel parameters) that requires Linux capabilities not granted by default.",
+      "fix": "Grant specific capabilities with `--cap-add NET_BIND_SERVICE` rather than running `--privileged`. For sysctl changes use `--sysctl net.ipv4.ip_forward=1`.",
+      "tags": ["security", "capabilities", "privileged"]
+    },
+    {
+      "code": "seccomp-blocked",
+      "name": "Syscall Blocked by Seccomp",
+      "category": "Security",
+      "severity": "medium",
+      "message": "Operation not permitted (seccomp profile blocked syscall)",
+      "cause": "Docker's default seccomp profile blocks certain syscalls. Some applications (perf, certain JVM operations, ptrace) require syscalls not in the default allowlist.",
+      "fix": "Run with a custom seccomp profile: `--security-opt seccomp=custom.json`. As a last resort: `--security-opt seccomp=unconfined` (not recommended for production).",
+      "tags": ["security", "seccomp", "syscall"]
+    },
+    {
+      "code": "cgroup-limit-exceeded",
+      "name": "cgroup Resource Limit Exceeded",
+      "category": "Runtime",
+      "severity": "high",
+      "message": "container killed due to resource limit",
+      "cause": "Container exceeded CPU, memory, or PID limits set by cgroup constraints (via Docker `--memory`, `--cpus`, `--pids-limit` flags or Kubernetes resource limits).",
+      "fix": "Increase limits: `--memory=2g --cpus=1`. Profile the application for resource leaks. Use `docker stats <container>` to monitor live resource usage.",
+      "tags": ["runtime", "cgroup", "resources", "limits"]
+    },
+    {
+      "code": "copy-file-not-found",
+      "name": "COPY / ADD Source Not Found",
+      "category": "Build",
+      "severity": "medium",
+      "message": "COPY failed: file not found in build context or excluded by .dockerignore",
+      "cause": "The file specified in a COPY instruction does not exist in the build context, or it was excluded by .dockerignore.",
+      "fix": "Check the file path relative to the build context directory. Review .dockerignore for accidental exclusions. Verify the file exists locally before building.",
+      "tags": ["build", "dockerfile", "copy"]
+    },
+    {
+      "code": "layer-too-large",
+      "name": "Image Layer Too Large",
+      "category": "Build",
+      "severity": "low",
+      "message": "Image size is unexpectedly large",
+      "cause": "Files added in one RUN layer are deleted in a subsequent layer, but the data still exists in the earlier layer (layers are additive).",
+      "fix": "Combine RUN commands with `&&` and clean up in the same layer: `RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*`. Use multi-stage builds.",
+      "tags": ["build", "layers", "image-size", "multi-stage"]
+    },
+    {
+      "code": "log-driver-error",
+      "name": "Log Driver Configuration Error",
+      "category": "Daemon",
+      "severity": "medium",
+      "message": "Error starting logging driver",
+      "cause": "The configured log driver (fluentd, awslogs, gelf) is unreachable or misconfigured.",
+      "fix": "Verify the log driver endpoint is reachable from the Docker host. Check log driver options in daemon.json or container `--log-driver` and `--log-opt` flags.",
+      "tags": ["daemon", "logging", "log-driver"]
+    },
+    {
+      "code": "overlay2-fs-error",
+      "name": "OverlayFS Error",
+      "category": "Storage",
+      "severity": "high",
+      "message": "Error response from daemon: driver \"overlay2\" failed to create layer",
+      "cause": "OverlayFS storage driver error, often caused by filesystem incompatibility (e.g. XFS without d_type support, ZFS, NFS).",
+      "fix": "Check filesystem type: `df -T /var/lib/docker`. Ensure XFS is formatted with `ftype=1`. Consider switching to a supported storage driver for your filesystem.",
+      "tags": ["storage", "overlay2", "filesystem"]
+    },
+    {
+      "code": "swarm-not-initialized",
+      "name": "Swarm Not Initialized",
+      "category": "Swarm",
+      "severity": "medium",
+      "message": "Error response from daemon: This node is not a swarm manager",
+      "cause": "Attempting to run Swarm commands on a node that has not been initialized as a Swarm manager.",
+      "fix": "Initialize Swarm: `docker swarm init`. For worker nodes, use the join token from `docker swarm join-token worker`.",
+      "tags": ["swarm", "orchestration"]
+    },
+    {
+      "code": "network-subnet-conflict",
+      "name": "Network Subnet Conflict",
+      "category": "Network",
+      "severity": "medium",
+      "message": "Error response from daemon: Pool overlaps with other one on this address space",
+      "cause": "The subnet Docker is trying to allocate for a new network overlaps with an existing network or host route.",
+      "fix": "Specify a custom subnet: `docker network create --subnet 172.28.0.0/16 mynet`. Or prune unused networks: `docker network prune`.",
+      "tags": ["network", "subnet", "ip-conflict"]
+    },
+    {
+      "code": "healthcheck-timeout",
+      "name": "Health Check Timeout",
+      "category": "Runtime",
+      "severity": "medium",
+      "message": "health_status: unhealthy (timeout)",
+      "cause": "The healthcheck command took longer than the configured `--health-timeout` value (default 30s).",
+      "fix": "Increase timeout: `HEALTHCHECK --interval=30s --timeout=60s CMD ...`. Optimize the health check command. Ensure the application is not under excessive load.",
+      "tags": ["runtime", "healthcheck", "timeout"]
+    },
+    {
+      "code": "entrypoint-env-missing",
+      "name": "Required Environment Variable Missing",
+      "category": "Runtime",
+      "severity": "high",
+      "message": "Application crash on startup: environment variable <VAR> not set",
+      "cause": "The application requires an environment variable that was not passed to the container.",
+      "fix": "Pass env vars with `-e VAR=value` or `--env-file .env`. In Compose, use the `environment:` or `env_file:` keys. Validate required vars in entrypoint scripts with `set -u`.",
+      "tags": ["runtime", "environment", "configuration"]
+    },
+    {
+      "code": "copy-permission-denied",
+      "name": "File Permission Denied Inside Container",
+      "category": "Runtime",
+      "severity": "medium",
+      "message": "Permission denied writing to /app or /data",
+      "cause": "The process inside the container is running as a non-root user without write permission to the target directory.",
+      "fix": "Add `RUN chown -R appuser:appuser /app` before switching to the non-root user in your Dockerfile. Or set directory permissions with `RUN chmod 755 /data`.",
+      "tags": ["runtime", "permissions", "user"]
+    },
+    {
+      "code": "pid1-zombie",
+      "name": "Zombie Processes (PID 1 Problem)",
+      "category": "Runtime",
+      "severity": "low",
+      "message": "Process accumulation / container not responding to SIGTERM",
+      "cause": "When a shell script is PID 1 in a container, it does not reap child processes or forward signals correctly, causing zombie accumulation and unclean shutdowns.",
+      "fix": "Use `exec` in entrypoint scripts: `exec node server.js`. Or use a lightweight init system: `docker run --init`. Or use `tini` as PID 1 in the Dockerfile.",
+      "tags": ["runtime", "pid1", "signals", "init", "tini"]
+    },
+    {
+      "code": "ulimit-exceeded",
+      "name": "Open File Limit Exceeded (ulimit)",
+      "category": "Runtime",
+      "severity": "medium",
+      "message": "Too many open files",
+      "cause": "The process inside the container hit the open file descriptor limit. Common with high-traffic servers, databases, or applications that open many connections.",
+      "fix": "Increase limits: `docker run --ulimit nofile=65535:65535`. Set system-wide defaults in `/etc/docker/daemon.json` under `\"default-ulimits\"`. Check current usage: `ls /proc/<pid>/fd | wc -l`.",
+      "tags": ["runtime", "ulimit", "file-descriptors"]
+    }
+  ]
+}
